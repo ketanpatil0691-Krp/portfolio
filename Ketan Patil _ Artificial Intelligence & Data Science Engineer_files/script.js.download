@@ -1,0 +1,162 @@
+/**
+ * Professional Portfolio Engine - Ketan Patil
+ * Artificial Intelligence & Data Science Engineer
+ */
+
+// Projects Database
+const projectsData = {
+    'proj-1': {
+        title: 'SmartResume AI: Intelligent ATS Resume Analyzer',
+        category: 'AI & Natural Language Processing',
+        image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1000&auto=format&fit=crop&q=80',
+        description: 'An automated ATS resume screener and match prediction system engineered in Python. It parses multi-format documents (PDF, DOCX), extracts candidate skillsets via Named Entity Recognition (NER), and computes cosine similarity against job descriptions to provide gap insights and score breakdowns.',
+        techStack: ['Python', 'FastAPI', 'spaCy / NLP', 'PyTorch', 'Scikit-Learn', 'React'],
+        githubUrl: 'https://github.com/ketanpatil/smart-resume-matcher'
+    },
+    'proj-2': {
+        title: 'DevPulse: Engineering Community Platform',
+        category: 'Full-Stack Web Architecture',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000&auto=format&fit=crop&q=80',
+        description: 'A responsive full-stack collaboration platform designed for software engineers. Incorporates user authentication with JWT, markdown publishing, real-time code execution snippets, and optimized MongoDB aggregation pipelines.',
+        techStack: ['React.js', 'Node.js', 'Express', 'MongoDB', 'JWT Auth', 'Tailwind CSS'],
+        githubUrl: 'https://github.com/ketanpatil/devpulse'
+    },
+    'proj-3': {
+        title: 'Predictive Analytics & Insight Dashboard',
+        category: 'Data Science & Machine Learning',
+        image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1000&auto=format&fit=crop&q=80',
+        description: 'An interactive machine learning and statistical analytics dashboard. Implements exploratory data analysis (EDA), anomaly detection, customer churn forecasting with ensemble tree algorithms, and dynamic visual reporting.',
+        techStack: ['Python', 'Pandas', 'NumPy', 'Scikit-Learn', 'Streamlit', 'Matplotlib'],
+        githubUrl: 'https://github.com/ketanpatil'
+    },
+    'proj-4': {
+        title: 'AlgoVision: Interactive Algorithm Engine',
+        category: 'Data Structures & Algorithms',
+        image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1000&auto=format&fit=crop&q=80',
+        description: 'An algorithmic visualization tool designed to demonstrate pathfinding algorithms (Dijkstra, A*) and sorting routines (Quick, Merge, Heap). Features customizable animation frames, speed throttles, and wall/weight placements.',
+        techStack: ['JavaScript (ES6)', 'HTML5 Canvas', 'Data Structures', 'Algorithms', 'CSS3'],
+        githubUrl: 'https://github.com/ketanpatil/algovision-visualizer'
+    }
+};
+
+// Navbar Background On Scroll
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+        navbar.classList.add('py-3', 'shadow-xl', 'bg-[#0a0f1d]/95');
+        navbar.classList.remove('py-4', 'bg-[#0a0f1d]/80');
+    } else {
+        navbar.classList.add('py-4', 'bg-[#0a0f1d]/80');
+        navbar.classList.remove('py-3', 'shadow-xl', 'bg-[#0a0f1d]/95');
+    }
+});
+
+// Modal Dialog Functions
+function openModal(projectId) {
+    const project = projectsData[projectId];
+    if (!project) return;
+
+    document.getElementById('modalTitle').textContent = project.title;
+    document.getElementById('modalCategory').textContent = project.category;
+    document.getElementById('modalDescription').textContent = project.description;
+    document.getElementById('modalImage').src = project.image;
+    document.getElementById('modalGithub').href = project.githubUrl;
+
+    const techContainer = document.getElementById('modalTechStack');
+    techContainer.innerHTML = '';
+    project.techStack.forEach(tech => {
+        const span = document.createElement('span');
+        span.className = 'project-tech-pill';
+        span.textContent = tech;
+        techContainer.appendChild(span);
+    });
+
+    const modal = document.getElementById('projectModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('projectModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+});
+document.getElementById('projectModal').addEventListener('click', (e) => {
+    if (e.target.id === 'projectModal') closeModal();
+});
+
+// Mobile Navigation Drawer Toggle
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileDrawer = document.getElementById('mobileDrawer');
+const mobileLinks = document.querySelectorAll('.mobile-link');
+
+mobileMenuBtn.addEventListener('click', () => {
+    const isClosed = mobileDrawer.classList.contains('translate-x-full');
+    if (isClosed) {
+        mobileDrawer.classList.remove('translate-x-full');
+    } else {
+        mobileDrawer.classList.add('translate-x-full');
+    }
+});
+
+mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        mobileDrawer.classList.add('translate-x-full');
+    });
+});
+
+// Real-Time Project Filter
+const searchInput = document.getElementById('projectSearchInput');
+const clearSearch = document.getElementById('clearProjectSearch');
+
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length > 0) {
+            clearSearch.classList.remove('hidden');
+        } else {
+            clearSearch.classList.add('hidden');
+        }
+
+        const cards = document.querySelectorAll('.project-card');
+        cards.forEach(card => {
+            const cardText = (card.textContent + ' ' + (card.dataset.tags || '')).toLowerCase();
+            if (cardText.includes(query)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    clearSearch.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearch.classList.add('hidden');
+        document.querySelectorAll('.project-card').forEach(card => card.style.display = 'flex');
+    });
+}
+
+// Contact Form Handler
+function handleFormSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('senderName').value;
+    const email = document.getElementById('senderEmail').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    const feedback = document.getElementById('formFeedback');
+    feedback.className = 'text-xs py-3 px-4 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 block';
+    feedback.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-emerald-400"></i> Thank you ${name}! Opening your email client to send your message...`;
+
+    const mailtoLink = `mailto:ketan.patil@email.com?subject=${encodeURIComponent(subject + ' - via Portfolio')}&body=${encodeURIComponent(`From: ${name} (${email})\n\nMessage:\n${message}`)}`;
+
+    setTimeout(() => {
+        window.location.href = mailtoLink;
+    }, 800);
+}
